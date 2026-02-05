@@ -1,48 +1,82 @@
 import { useEffect } from "react";
-import FirebaseStatus from "@/components/FirebaseStatus";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { subscribeToAuthState } from "./lib/auth";
+import { useAuthStore } from "@/store/authStore";
 
-export default function App() {
-  useEffect(() => {
-    console.log('Firebase Config:');
-    console.log('API Key:', import.meta.env.VITE_FIREBASE_API_KEY);
-    console.log('Project ID:', import.meta.env.VITE_FIREBASE_PROJECT_ID);
-  }, []);
+// 레이아웃
+import MainLayout from "@/layout/MainLayout";
 
-  return (<div className="min-h-screen bg-gray-50">
-      {/* 임시 헤더 */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">
-            📝 My Dev Blog
-          </h1>
-        </div>
-      </header>
+// 페이지
+import HomePage from "@/pages/HomePage";
+import LoginPage from "@/pages/LoginPage";
+import SignUpPage from "@/pages/SignUpPage";
+import PostWritePage from "./pages/PostWritePage";
+import PostDetailPage from "./pages/PostDetailPage";
+import PostEditPage from "./pages/PostEditPage";
 
-      {/* 메인 콘텐츠 */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">
-            블로그 프로젝트 초기 설정 완료!
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Firebase 연동 상태를 확인해보세요.
-          </p>
-          
-          {<FirebaseStatus />/* Firebase 연동 확인 컴포넌트가 들어갈 자리 */}
-          <div className="p-4 bg-gray-100 rounded">
-            <p className="text-sm text-gray-500">
-              Firebase 연동 확인은 아래에서 진행됩니다.
-            </p> 
-      
-        </div>
-         </div>
-      </main>
+// 공통 컴포넌트
+import ProtectedRoute from "@/components/ProtectedRoute";
 
-      {/* 임시 푸터 */}
-      <footer className="bg-white border-t mt-auto">
-        <div className="max-w-4xl mx-auto px-4 py-4 text-center text-gray-500 text-sm">
-          © 2025 My Dev Blog. Built with React + Firebase
-        </div>
-      </footer>
-    </div> );
+function App() {
+    const { isLoading, setUser, setIsLoading } = useAuthStore();
+
+    useEffect(() => {
+        const unsubscribe = subscribeToAuthState((user) => {
+            setUser(user);
+            setIsLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [setUser, setIsLoading]);
+
+    // 인증 상태 로딩 중
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div
+                        className="w-8 h-8 border-4 border-blue-600 border-t-transparent 
+                        rounded-full animate-spin mx-auto"
+                    ></div>
+                    <p className="mt-4 text-gray-600">로딩 중...</p>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* 레이아웃이 적용되는 라우트 */}
+                <Route element={<MainLayout />}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/posts/:id" element={<PostDetailPage />} />
+
+                    {/* 보호된 라우트 - 로그인 필요 */}
+                    <Route
+                        path="/write"
+                        element={
+                            <ProtectedRoute>
+                                <PostWritePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/posts/:id/edit"
+                        element={
+                            <ProtectedRoute>
+                                <PostEditPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Route>
+
+                {/* 인증 페이지 */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
+
+export default App;
