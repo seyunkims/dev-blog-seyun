@@ -2,15 +2,14 @@
  * 게시글 상세 페이지
  *
  * Day 1 요구사항: POST-003, POST-004, POST-005
- * Day 1 사용자 스토리: US-005 (내 글 수정), US-006 (내 글 삭제)
- * Day 1 컴포넌트 구조도: PostDetailPage > PostHeader, PostContent
+ *
+ * TanStack Query 적용으로 리팩토링
  */
 
-import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getPost, deletePost } from "../lib/posts";
+import { usePost } from "@/hooks/queries";
+import { useDeletePost } from "@/hooks/mutations";
 import { useAuthStore } from "@/store/authStore";
-import type { Post } from "@/types";
 import { CATEGORY_LABELS } from "@/types";
 
 function PostDetailPage() {
@@ -18,59 +17,30 @@ function PostDetailPage() {
     const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
 
-    const [post, setPost] = useState<Post | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
+    // TanStack Query로 게시글 조회
+    const { data: post, isLoading, error } = usePost(id);
 
-    // 게시글 불러오기
-    useEffect(() => {
-        const fetchPost = async () => {
-            if (!id) return;
-
-            try {
-                const data = await getPost(id);
-                if (!data) {
-                    setError("게시글을 찾을 수 없습니다.");
-                } else {
-                    setPost(data);
-                }
-            } catch (err) {
-                console.error("게시글 조회 실패:", err);
-                setError("게시글을 불러오는데 실패했습니다.");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPost();
-    }, [id]);
+    // 삭제 뮤테이션
+    const deletePostMutation = useDeletePost();
 
     /**
      * 게시글 삭제 핸들러
-     *
-     * Day 1 사용자 스토리 US-006 인수 조건:
-     * - 삭제 전 확인 메시지가 표시된다
-     * - 삭제 후 목록에서 해당 글이 사라진다
      */
     const handleDelete = async () => {
-        if (!post || !id) return;
+        if (!id) return;
 
-        // Day 1: 삭제 전 확인 메시지
         if (!window.confirm("정말 이 게시글을 삭제하시겠습니까?")) {
             return;
         }
 
-        setIsDeleting(true);
-        try {
-            await deletePost(id);
-            navigate("/");
-        } catch (err) {
-            console.error("게시글 삭제 실패:", err);
-            alert("삭제에 실패했습니다. 다시 시도해주세요.");
-        } finally {
-            setIsDeleting(false);
-        }
+        deletePostMutation.mutate(id, {
+            onSuccess: () => {
+                navigate("/");
+            },
+            onError: () => {
+                alert("삭제에 실패했습니다. 다시 시도해주세요.");
+            },
+        });
     };
 
     /**
@@ -118,7 +88,7 @@ function PostDetailPage() {
             <div className="max-w-3xl mx-auto">
                 <div className="bg-white rounded-lg shadow p-8 text-center">
                     <p className="text-gray-500 text-lg mb-4">
-                        {error || "게시글을 찾을 수 없습니다."}
+                        {error?.message || "게시글을 찾을 수 없습니다."}
                     </p>
                     <Link to="/" className="text-blue-600 hover:text-blue-700">
                         홈으로 돌아가기
@@ -177,15 +147,18 @@ function PostDetailPage() {
                                 >
                                     수정
                                 </Link>
+                                {/* 수정됨 ---------------------------------- */}
                                 <button
                                     onClick={handleDelete}
-                                    disabled={isDeleting}
+                                    disabled={deletePostMutation.isPending}
                                     className="px-3 py-1 text-sm text-red-600 hover:text-red-700
                            border border-red-300 rounded hover:bg-red-50
                            disabled:opacity-50 disabled:cursor-not-allowed
                            transition-colors"
                                 >
-                                    {isDeleting ? "삭제 중..." : "삭제"}
+                                    {deletePostMutation.isPending
+                                        ? "삭제 중..."
+                                        : "삭제"}
                                 </button>
                             </div>
                         )}
