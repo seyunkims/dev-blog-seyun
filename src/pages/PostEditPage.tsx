@@ -83,9 +83,9 @@ function PostEditPage() {
 
     return (
         <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">글 수정</h1>
+            <h1 className="text-2xl font-bold mb-6">글 수정</h1>
 
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="rounded-lg shadow p-6">
                 <PostForm
                     initialData={{
                         title: post.title,

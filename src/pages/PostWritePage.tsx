@@ -36,17 +36,12 @@ function PostWritePage() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl font-bold text-gray-900 mb-6">
-                새 글 작성
-            </h1>
-
-            <div className="bg-white rounded-lg shadow p-6">
-                <PostForm
-                    onSubmit={handleSubmit}
-                    isLoading={createPostMutation.isPending}
-                />
-            </div>
+        <div>
+            <h1 className="text-2xl font-bold mb-6">글쓰기</h1>
+            <PostForm
+                onSubmit={handleSubmit}
+                isLoading={createPostMutation.isPending}
+            />
         </div>
     );
 }
