@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import PostForm from "@/components/PostForm";
 import type { PostInput } from "@/types";
-
-// ----------------------------------
 import { usePost } from "@/hooks/queries";
 import { useUpdatePost } from "@/hooks/mutations";
 
@@ -15,18 +13,21 @@ function PostEditPage() {
   const { data: post, isLoading, error } = usePost(id);
   const updatePostMutation = useUpdatePost();
 
-  const handleSubmit = useCallback(async (data: PostInput) => {
-    if (!id) return;
+  const handleSubmit = useCallback(
+    async (data: PostInput) => {
+      if (!id) return;
 
-    updatePostMutation.mutate(
-      { postId: id, input: data },
-      {
-        onSuccess: () => {
-          navigate(`/posts/${id}`);
+      updatePostMutation.mutate(
+        { postId: id, input: data },
+        {
+          onSuccess: () => {
+            navigate(`/posts/${id}`);
+          },
         },
-      }
-    );
-  }, [id, updatePostMutation, navigate]);
+      );
+    },
+    [id, updatePostMutation, navigate],
+  );
 
   const hasPermission = user && post && user.uid === post.authorId;
 
@@ -73,6 +74,7 @@ function PostEditPage() {
         onSubmit={handleSubmit}
         submitLabel="수정하기"
         isLoading={updatePostMutation.isPending}
+        userId={user?.uid ?? ""}
       />
     </div>
   );

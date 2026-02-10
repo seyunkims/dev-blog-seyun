@@ -13,6 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DeletePostDialog from "@/components/DeletePostDialog";
 import ErrorMessage from "@/components/ErrorMessage";
 
+import DOMPurify from "dompurify"; // 추가된 부분
+
 function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -97,14 +99,22 @@ function PostDetailPage() {
           </div>
         </CardHeader>
 
+        {/* 수정된 부분 */}
         <CardContent>
-          <div className="prose dark:prose-invert max-w-none">
-            {post.content.split("\n").map((line, index) => (
-              <p key={index} className="mb-4">
-                {line || <br />}
-              </p>
-            ))}
-          </div>
+          <div
+            className="prose dark:prose-invert max-w-none prose-img:rounded-lg prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(post.content, {
+                ADD_TAGS: ["iframe"],
+                ADD_ATTR: [
+                  "allow",
+                  "allowfullscreen",
+                  "frameborder",
+                  "scrolling",
+                ],
+              }),
+            }}
+          />
         </CardContent>
       </Card>
 

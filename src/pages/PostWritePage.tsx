@@ -33,6 +33,7 @@ function PostWritePage() {
       <PostForm
         onSubmit={handleSubmit}
         isLoading={createPostMutation.isPending}
+        userId={user?.uid ?? ""}
       />
     </div>
   );
