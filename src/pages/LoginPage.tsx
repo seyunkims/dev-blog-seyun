@@ -1,7 +1,8 @@
 import { type SyntheticEvent, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { signIn, getAuthErrorMessage, signInWithGoogle } from "@/lib/auth";
-//
+import { ROUTES } from "@/constants";
+import { isFirebaseError } from "@/utils/typeGuards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,6 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  //   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,10 +27,8 @@ function LoginPage() {
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // setError(null);
 
     if (!email.trim() || !password.trim()) {
-      //   setError("이메일과 비밀번호를 입력해주세요.");
       toast.error("이메일과 비밀번호를 입력해주세요");
       return;
     }
@@ -39,15 +37,12 @@ function LoginPage() {
 
     try {
       await signIn(email, password);
-      toast.success("로그인되었습니다"); // 성공 메시지
+      toast.success("로그인되었습니다");
       navigate(from, { replace: true });
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "code" in err) {
-        const firebaseError = err as { code: string };
-        // setError(getAuthErrorMessage(firebaseError.code));
-        toast.error(getAuthErrorMessage(firebaseError.code));
+      if (isFirebaseError(err)) {
+        toast.error(getAuthErrorMessage(err.code));
       } else {
-        // setError("로그인 중 오류가 발생했습니다.");
         toast.error("로그인 중 오류가 발생했습니다");
       }
     } finally {
@@ -56,20 +51,16 @@ function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    // setError(null);
     setIsLoading(true);
 
     try {
       await signInWithGoogle();
       toast.success("로그인되었습니다");
-      navigate(from, { replace: true }); // 수정: 원래 페이지로 이동;
+      navigate(from, { replace: true });
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "code" in err) {
-        const firebaseError = err as { code: string };
-        // 사용자가 팝업을 닫은 경우는 에러 표시 안 함
-        if (firebaseError.code !== "auth/popup-closed-by-user") {
-          //   setError(getAuthErrorMessage(firebaseError.code));
-          toast.error(getAuthErrorMessage(firebaseError.code));
+      if (isFirebaseError(err)) {
+        if (err.code !== "auth/popup-closed-by-user") {
+          toast.error(getAuthErrorMessage(err.code));
         }
       } else {
         toast.error("Google 로그인 중 오류가 발생했습니다.");
@@ -83,7 +74,7 @@ function LoginPage() {
     <main className="min-h-screen flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-lg py-12 px-4">
         <CardHeader className="text-center">
-          <Link to="/" className="text-3xl font-bold mb-4 block">
+          <Link to={ROUTES.HOME} className="text-3xl font-bold mb-4 block">
             📝 My Dev Blog
           </Link>
           <CardTitle className="text-2xl">로그인</CardTitle>
@@ -160,7 +151,7 @@ function LoginPage() {
             <p className="text-center text-sm text-muted-foreground">
               계정이 없으신가요?{" "}
               <Link
-                to="/signup"
+                to={ROUTES.SIGNUP}
                 className="text-primary hover:underline font-medium"
               >
                 회원가입

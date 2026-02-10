@@ -1,10 +1,5 @@
-/**
- * TanStack Query Client 설정
- *
- * 📚 공식 문서: https://tanstack.com/query/latest/docs/react/overview
- */
-
 import { QueryClient } from "@tanstack/react-query";
+import { STALE_TIME, GC_TIME } from "@/constants";
 
 /**
  * Query Client 인스턴스
@@ -14,13 +9,8 @@ import { QueryClient } from "@tanstack/react-query";
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            // 데이터가 "신선"하다고 간주되는 시간 (5분)
-            // 이 시간 동안은 캐시된 데이터 사용
-            staleTime: 1000 * 60 * 5,
-
-            // 캐시 유지 시간 (10분)
-            // 컴포넌트가 언마운트되어도 이 시간 동안 캐시 유지
-            gcTime: 1000 * 60 * 10,
+            staleTime: STALE_TIME,
+            gcTime: GC_TIME,
 
             // 실패 시 재시도 횟수
             retry: 1,

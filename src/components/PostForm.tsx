@@ -3,8 +3,8 @@ import { AlertCircle } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import type { PostInput, Category } from "@/types";
 import { CATEGORY_LABELS } from "@/types";
+import { TITLE_MAX_LENGTH } from "@/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -47,8 +47,8 @@ function PostForm({
       return;
     }
 
-    if (title.length > 100) {
-      setError("제목은 100자 이내로 입력해주세요.");
+    if (title.length > TITLE_MAX_LENGTH) {
+      setError(`제목은 ${TITLE_MAX_LENGTH}자 이내로 입력해주세요.`);
       return;
     }
 
@@ -103,10 +103,10 @@ function PostForm({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="게시글 제목을 입력하세요"
-              maxLength={100}
+              maxLength={TITLE_MAX_LENGTH}
               className="h-11"
             />
-            <p className="text-xs text-right">{title.length}/100</p>
+            <p className="text-xs text-right">{title.length}/{TITLE_MAX_LENGTH}</p>
           </div>
 
           {/* 카테고리 선택 */}

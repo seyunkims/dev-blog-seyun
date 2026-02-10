@@ -270,7 +270,10 @@ export async function getPostsWithOptions(
 }
 
 export function subscribeToPostsRealtime(
-callback: (posts: PostSummary[]) => void, options: { category?: Category | null; limitCount?: number; } = {}, p0: (err: any) => void): () => void {
+  callback: (posts: PostSummary[]) => void,
+  options: { category?: Category | null; limitCount?: number; } = {},
+  onError?: (error: Error) => void
+): () => void {
   const { category = null, limitCount = 20 } = options;
 
   const constraints = [];
@@ -299,7 +302,7 @@ callback: (posts: PostSummary[]) => void, options: { category?: Category | null;
     });
 
     callback(posts);
-  });
+  }, onError);
 }
 
 /**

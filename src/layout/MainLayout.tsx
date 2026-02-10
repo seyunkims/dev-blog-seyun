@@ -20,7 +20,7 @@ function Layout() {
 
       <footer className="border-t">
         <div className="container-main py-4 text-center text-sm">
-          © 2025 My Dev Blog. Built with React + Firebase
+          © 2026 My Dev Blog. Built with React + Firebase
         </div>
       </footer>
     </div>

@@ -1,7 +1,8 @@
 import { type SyntheticEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signUp, getAuthErrorMessage } from "@/lib/auth";
-//
+import { ROUTES, PASSWORD_MIN_LENGTH } from "@/constants";
+import { isFirebaseError } from "@/utils/typeGuards";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +21,6 @@ function SignUpPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -28,13 +28,12 @@ function SignUpPage() {
     e.preventDefault();
 
     if (!email.trim()) {
-      // setError("이메일을 입력해주세요.");
       toast.error("이메일을 입력해주세요.");
       return;
     }
 
-    if (password.length < 6) {
-      toast.error("비밀번호는 6자 이상이어야 합니다.");
+    if (password.length < PASSWORD_MIN_LENGTH) {
+      toast.error(`비밀번호는 ${PASSWORD_MIN_LENGTH}자 이상이어야 합니다.`);
       return;
     }
 
@@ -48,11 +47,10 @@ function SignUpPage() {
     try {
       await signUp(email, password);
       toast.success("회원가입이 완료되었습니다");
-      navigate("/");
+      navigate(ROUTES.HOME);
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "code" in err) {
-        const firebaseError = err as { code: string };
-        toast.error(getAuthErrorMessage(firebaseError.code));
+      if (isFirebaseError(err)) {
+        toast.error(getAuthErrorMessage(err.code));
       } else {
         toast.error("회원가입 중 오류가 발생했습니다.");
       }
@@ -65,7 +63,7 @@ function SignUpPage() {
     <main className="min-h-screen flex items-center justify-center py-12 px-4">
       <Card className="w-full max-w-lg py-12 px-4">
         <CardHeader className="text-center">
-          <Link to="/" className="text-3xl font-bold mb-4 block">
+          <Link to={ROUTES.HOME} className="text-3xl font-bold mb-4 block">
             📝 My Dev Blog
           </Link>
           <CardTitle className="text-2xl">회원가입</CardTitle>
@@ -93,7 +91,7 @@ function SignUpPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="6자 이상 입력하세요"
+                placeholder={`${PASSWORD_MIN_LENGTH}자 이상 입력하세요`}
                 disabled={isLoading}
               />
             </div>
@@ -117,7 +115,7 @@ function SignUpPage() {
             <p className="text-center text-sm text-muted-foreground">
               이미 계정이 있으신가요?{" "}
               <Link
-                to="/login"
+                to={ROUTES.LOGIN}
                 className="text-primary hover:underline font-medium"
               >
                 로그인

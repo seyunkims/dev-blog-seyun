@@ -41,7 +41,7 @@ export default function App() {
       {/* 임시 푸터 */}
       <footer className="bg-white border-t mt-auto">
         <div className="max-w-4xl mx-auto px-4 py-4 text-center text-gray-500 text-sm">
-          © 2025 My Dev Blog. Built with React + Firebase
+          © 2026 My Dev Blog. Built with React + Firebase
         </div>
       </footer>
     </div> );

@@ -1,0 +1,6 @@
+# robots.txt for dev-blog-seyun
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://dev-blog-seyun.web.app/sitemap.xml

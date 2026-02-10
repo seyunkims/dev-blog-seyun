@@ -1,20 +1,28 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import PostList from "@/components/PostList";
 import type { Category } from "@/types";
 import { CATEGORY_LABELS } from "@/types";
 import { useInfinitePosts } from "@/hooks/queries";
-//
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import ErrorMessage from "@/components/ErrorMessage";
+import { ROUTES, PAGE_SIZE } from "@/constants";
+
+const CATEGORIES: Category[] = [
+  "javascript",
+  "typescript",
+  "react",
+  "firebase",
+  "etc",
+];
 
 function HomePage() {
   const user = useAuthStore((state) => state.user);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
-    null
+    null,
   );
 
   const {
@@ -27,10 +35,13 @@ function HomePage() {
     refetch,
   } = useInfinitePosts({
     category: selectedCategory,
-    pageSize: 5,
+    pageSize: PAGE_SIZE,
   });
 
-  const posts = data?.pages.flatMap((page) => page.posts) ?? [];
+  const posts = useMemo(
+    () => data?.pages.flatMap((page) => page.posts) ?? [],
+    [data],
+  );
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +52,7 @@ function HomePage() {
         fetchNextPage();
       }
     },
-    [fetchNextPage, hasNextPage, isFetchingNextPage]
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
   useEffect(() => {
@@ -61,14 +72,6 @@ function HomePage() {
     };
   }, [handleObserver]);
 
-  const categories: Category[] = [
-    "javascript",
-    "typescript",
-    "react",
-    "firebase",
-    "etc",
-  ];
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -76,12 +79,11 @@ function HomePage() {
 
         {user && (
           <Button asChild>
-            <Link to="/write">✏️ 글쓰기</Link>
+            <Link to={ROUTES.WRITE}>✏️ 글쓰기</Link>
           </Button>
         )}
       </div>
 
-      {/* 카테고리 필터 (Day 1 POST-006) */}
       <div className="flex flex-wrap gap-2">
         <Badge
           variant={selectedCategory === null ? "default" : "outline"}
@@ -90,7 +92,7 @@ function HomePage() {
         >
           전체
         </Badge>
-        {categories.map((cat) => (
+        {CATEGORIES.map((cat) => (
           <Badge
             key={cat}
             variant={selectedCategory === cat ? "default" : "outline"}
@@ -102,7 +104,6 @@ function HomePage() {
         ))}
       </div>
 
-      {/* 에러 메시지 */}
       {error && (
         <ErrorMessage
           message="게시글을 불러오는데 실패했습니다"
@@ -110,10 +111,8 @@ function HomePage() {
         />
       )}
 
-      {/* 게시글 목록 */}
       {!error && <PostList posts={posts} isLoading={isLoading} />}
 
-      {/* 무한 스크롤 트리거 */}
       <div ref={loadMoreRef} className="h-10 flex items-center justify-center">
         {isFetchingNextPage && (
           <div className="flex items-center gap-2 text-gray-500">

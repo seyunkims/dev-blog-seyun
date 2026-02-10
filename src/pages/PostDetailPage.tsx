@@ -1,10 +1,11 @@
+import { useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { usePost } from "@/hooks/queries";
 import { useDeletePost } from "@/hooks/mutations";
 import { useAuthStore } from "@/store/authStore";
 import { CATEGORY_LABELS } from "@/types";
-
-// UI Components
+import { ROUTES, getPostEditPath } from "@/constants";
+import { formatDateTime, getDisplayName } from "@/utils/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,30 +21,18 @@ function PostDetailPage() {
   const { data: post, isLoading, error, refetch } = usePost(id);
   const deletePostMutation = useDeletePost();
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(() => {
     if (!id) return;
 
     deletePostMutation.mutate(id, {
       onSuccess: () => {
-        navigate("/");
+        navigate(ROUTES.HOME);
       },
     });
-  };
-
-  const formatDate = (timestamp: { toDate: () => Date }) => {
-    const date = timestamp.toDate();
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  }, [id, deletePostMutation, navigate]);
 
   const isAuthor = user && post && user.uid === post.authorId;
 
-  // 로딩 스켈레톤
   if (isLoading) {
     return (
       <Card>
@@ -61,7 +50,6 @@ function PostDetailPage() {
     );
   }
 
-  // 에러 상태
   if (error || !post) {
     return (
       <ErrorMessage
@@ -76,34 +64,29 @@ function PostDetailPage() {
     <div>
       <Card>
         <CardHeader className="space-y-4">
-          {/* 카테고리 */}
           {post.category && (
             <Badge variant="secondary" className="w-fit">
               {CATEGORY_LABELS[post.category]}
             </Badge>
           )}
 
-          {/* 제목 */}
           <h1 className="text-2xl font-bold">{post.title}</h1>
-
-          {/* 메타 정보 */}
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="text-sm text-muted-foreground">
               <span>
-                {post.authorDisplayName || post.authorEmail.split("@")[0]}
+                {getDisplayName(post.authorEmail, post.authorDisplayName)}
               </span>
               <span className="mx-2">·</span>
-              <span>{formatDate(post.createdAt)}</span>
+              <span>{formatDateTime(post.createdAt)}</span>
               {post.updatedAt.toMillis() !== post.createdAt.toMillis() && (
                 <span className="ml-2">(수정됨)</span>
               )}
             </div>
 
-            {/* 수정/삭제 버튼 */}
             {isAuthor && (
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" asChild>
-                  <Link to={`/posts/${post.id}/edit`}>수정</Link>
+                  <Link to={getPostEditPath(post.id)}>수정</Link>
                 </Button>
                 <DeletePostDialog
                   onConfirm={handleDelete}
@@ -125,10 +108,9 @@ function PostDetailPage() {
         </CardContent>
       </Card>
 
-      {/* 목록으로 링크 */}
       <div className="mt-6">
         <Button variant="ghost" asChild>
-          <Link to="/">← 목록으로</Link>
+          <Link to={ROUTES.HOME}>← 목록으로</Link>
         </Button>
       </div>
     </div>
