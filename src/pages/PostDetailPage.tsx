@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import DeletePostDialog from "@/components/DeletePostDialog";
+import CommentSection from "@/components/CommentSection";
 import ErrorMessage from "@/components/ErrorMessage";
 
 import DOMPurify from "dompurify"; // 추가된 부분
@@ -117,7 +118,7 @@ function PostDetailPage() {
           />
         </CardContent>
       </Card>
-
+      {id && <CommentSection postId={id} />}
       <div className="mt-6">
         <Button variant="ghost" asChild>
           <Link to={ROUTES.HOME}>← 목록으로</Link>

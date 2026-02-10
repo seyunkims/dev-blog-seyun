@@ -9,6 +9,7 @@ export const MAX_PAGE_SIZE = 50;
 // 입력 제한
 export const TITLE_MAX_LENGTH = 100;
 export const CONTENT_MAX_LENGTH = 50000;
+export const COMMENT_MAX_LENGTH = 1000;
 export const PASSWORD_MIN_LENGTH = 6;
 
 // 시간 단위 (ms)
