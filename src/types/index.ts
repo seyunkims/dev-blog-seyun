@@ -83,6 +83,7 @@ export interface PostSummary {
   id: string;
   title: string;
   category: Category | null;
+  authorId: string;
   authorEmail: string;
   authorDisplayName: string | null;
   createdAt: Timestamp;
@@ -140,6 +141,36 @@ export interface ApiResponse<T> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+// ============================================
+// UserProfile (회원 프로필)
+// ============================================
+
+/**
+ * Firestore users 컬렉션에 저장되는 회원 프로필 타입
+ */
+export interface UserProfile {
+  /** Firebase Auth UID (문서 ID와 동일) */
+  uid: string;
+
+  /** 이메일 */
+  email: string;
+
+  /** 표시 이름 */
+  displayName: string | null;
+
+  /** 프로필 이미지 URL */
+  photoURL: string | null;
+
+  /** 인증 제공자 */
+  provider: "email" | "google";
+
+  /** 가입 시각 */
+  createdAt: Timestamp;
+
+  /** 수정 시각 */
+  updatedAt: Timestamp;
 }
 
 // ============================================

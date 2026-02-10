@@ -4,7 +4,7 @@ import { usePost } from "@/hooks/queries";
 import { useDeletePost } from "@/hooks/mutations";
 import { useAuthStore } from "@/store/authStore";
 import { CATEGORY_LABELS } from "@/types";
-import { ROUTES, getPostEditPath } from "@/constants";
+import { ROUTES, getPostEditPath, getProfilePath } from "@/constants";
 import { formatDateTime, getDisplayName } from "@/utils/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -77,9 +77,12 @@ function PostDetailPage() {
           <h1 className="text-2xl font-bold">{post.title}</h1>
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="text-sm text-muted-foreground">
-              <span>
+              <Link
+                to={getProfilePath(post.authorId)}
+                className="hover:underline"
+              >
                 {getDisplayName(post.authorEmail, post.authorDisplayName)}
-              </span>
+              </Link>
               <span className="mx-2">·</span>
               <span>{formatDateTime(post.createdAt)}</span>
               {post.updatedAt.toMillis() !== post.createdAt.toMillis() && (

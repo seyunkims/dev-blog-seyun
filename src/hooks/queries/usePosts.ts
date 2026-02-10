@@ -7,7 +7,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getPostsWithOptions } from "@/lib/posts copy 1";
+import { getPostsWithOptions } from "@/lib/posts";
 import { queryKeys } from "./keys";
 import type { Category } from "@/types";
 

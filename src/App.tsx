@@ -19,65 +19,77 @@ const PostWritePage = lazy(() => import("./pages/PostWritePage"));
 const PostDetailPage = lazy(() => import("./pages/PostDetailPage"));
 const PostEditPage = lazy(() => import("./pages/PostEditPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 
 function App() {
-  const { isLoading, setUser, setIsLoading } = useAuthStore();
-  useTheme();
+    const { isLoading, setUser, setIsLoading } = useAuthStore();
+    useTheme();
 
-  useEffect(() => {
-    const unsubscribe = subscribeToAuthState((user) => {
-      setUser(user);
-      setIsLoading(false);
-    });
+    useEffect(() => {
+        const unsubscribe = subscribeToAuthState((user) => {
+            setUser(user);
+            setIsLoading(false);
+        });
 
-    return () => unsubscribe();
-  }, [setUser, setIsLoading]);
+        return () => unsubscribe();
+    }, [setUser, setIsLoading]);
 
-  if (isLoading) {
-    return <PageLoading message="사용자 정보를 불러오는 중입니다..." />;
-  }
+    if (isLoading) {
+        return <PageLoading message="사용자 정보를 불러오는 중입니다..." />;
+    }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Suspense fallback={<PageLoading />}>
-          <Routes>
-            <Route element={<MainLayout />}>
-              <Route path={ROUTES.HOME} element={<HomePage />} />
-              <Route path={ROUTES.POST_DETAIL} element={<PostDetailPage />} />
-              <Route
-                path={ROUTES.WRITE}
-                element={
-                  <ProtectedRoute>
-                    <PostWritePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path={ROUTES.POST_EDIT}
-                element={
-                  <ProtectedRoute>
-                    <PostEditPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-            <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+    return (
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Suspense fallback={<PageLoading />}>
+                    <Routes>
+                        <Route element={<MainLayout />}>
+                            <Route path={ROUTES.HOME} element={<HomePage />} />
+                            <Route
+                                path={ROUTES.POST_DETAIL}
+                                element={<PostDetailPage />}
+                            />
+                            <Route
+                                path={ROUTES.WRITE}
+                                element={
+                                    <ProtectedRoute>
+                                        <PostWritePage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path={ROUTES.POST_EDIT}
+                                element={
+                                    <ProtectedRoute>
+                                        <PostEditPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path={ROUTES.PROFILE}
+                                element={
+                                    <ProtectedRoute>
+                                        <ProfilePage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                        </Route>
+                        <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+                        <Route path={ROUTES.SIGNUP} element={<SignUpPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                </Suspense>
+            </BrowserRouter>
 
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 2000,
-        }}
-      />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
+            <Toaster
+                position="top-right"
+                toastOptions={{
+                    duration: 2000,
+                }}
+            />
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+    );
 }
 
 export default App;

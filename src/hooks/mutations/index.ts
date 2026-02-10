@@ -7,3 +7,5 @@ export * from "./useCreateComment";
 export * from "./useUpdateComment";
 export * from "./useDeleteComment";
 export * from "./useToggleLike";
+export * from "./useUpdateProfile";
+export * from "./useUpdatePassword";

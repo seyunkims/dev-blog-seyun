@@ -29,11 +29,13 @@ export const ROUTES = {
   WRITE: "/write",
   POST_DETAIL: "/posts/:id",
   POST_EDIT: "/posts/:id/edit",
+  PROFILE: "/profile/:uid",
 } as const;
 
 // 동적 라우트 생성 헬퍼
 export const getPostDetailPath = (id: string) => `/posts/${id}`;
 export const getPostEditPath = (id: string) => `/posts/${id}/edit`;
+export const getProfilePath = (uid: string) => `/profile/${uid}`;
 
 // 에러 메시지
 export const ERROR_MESSAGES = {

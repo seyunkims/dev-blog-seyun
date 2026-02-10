@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { logout } from "@/lib/auth";
 import { useAuthStore } from "@/store/authStore";
-import { ROUTES } from "@/constants";
+import { ROUTES, getProfilePath } from "@/constants";
 import ThemeToggle from "./ThemeToggle";
 
 function Header() {
@@ -19,25 +19,24 @@ function Header() {
     <header className="header">
       <div className="container-main">
         <div className="flex items-center justify-between h-16">
-          {/* 로고 */}
           <Link to={ROUTES.HOME} className="text-xl font-bold">
             📝 My Dev Blog
           </Link>
 
-          {/* 네비게이션 & 인증 버튼 */}
           <div className="flex items-center gap-4">
             {user ? (
-              // 로그인 상태
               <>
-                <span className="text-sm">
+                <Link
+                  to={getProfilePath(user.uid)}
+                  className="text-sm hover:underline"
+                >
                   {user.displayName || user.email}
-                </span>
+                </Link>
                 <button onClick={handleLogout} className="btn-ghost">
                   로그아웃
                 </button>
               </>
             ) : (
-              // 비로그인 상태
               <>
                 <Link to={ROUTES.LOGIN} className="btn-ghost">
                   로그인
@@ -47,7 +46,6 @@ function Header() {
                 </Link>
               </>
             )}
-            {/* 테마 토글 */}
             <ThemeToggle />
           </div>
         </div>

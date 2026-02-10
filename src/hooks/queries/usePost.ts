@@ -7,7 +7,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getPost } from "@/lib/posts copy 1";
+import { getPost } from "@/lib/posts";
 import { queryKeys } from "./keys";
 
 export function usePost(postId: string | undefined) {
