@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import DeletePostDialog from "@/components/DeletePostDialog";
 import CommentSection from "@/components/CommentSection";
+import LikeButton from "@/components/LikeButton";
 import ErrorMessage from "@/components/ErrorMessage";
 
 import DOMPurify from "dompurify"; // 추가된 부분
@@ -117,6 +118,10 @@ function PostDetailPage() {
             }}
           />
         </CardContent>
+
+        <div className="px-6 pb-6">
+          <LikeButton postId={post.id} likeCount={post.likeCount} />
+        </div>
       </Card>
       {id && <CommentSection postId={id} />}
       <div className="mt-6">

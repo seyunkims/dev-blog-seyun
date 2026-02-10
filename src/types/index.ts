@@ -59,6 +59,7 @@ export interface Post {
   authorDisplayName: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  likeCount: number;
 }
 
 /**
@@ -86,6 +87,7 @@ export interface PostSummary {
   authorDisplayName: string | null;
   createdAt: Timestamp;
   thumbnailUrl?: string;
+  likeCount: number;
 }
 
 // ============================================

@@ -6,6 +6,7 @@ import { getPostDetailPath } from "@/constants";
 import { formatDateShort, getDisplayName } from "@/utils/formatters";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import LikeButton from "./LikeButton";
 
 interface PostCardProps {
   post: PostSummary;
@@ -35,6 +36,8 @@ const PostCard = memo(function PostCard({ post }: PostCardProps) {
             </span>
             <span>·</span>
             <span>{formatDateShort(post.createdAt)}</span>
+            <span>·</span>
+            <LikeButton postId={post.id} likeCount={post.likeCount} size="sm" />
           </div>
         </CardContent>
 

@@ -19,4 +19,10 @@ export const queryKeys = {
         list: (postId: string) =>
             [...queryKeys.comments.lists(), postId] as const,
     },
+    likes: {
+        all: ["likes"] as const,
+        statuses: () => [...queryKeys.likes.all, "status"] as const,
+        status: (postId: string, userId: string) =>
+            [...queryKeys.likes.statuses(), postId, userId] as const,
+    },
 };
